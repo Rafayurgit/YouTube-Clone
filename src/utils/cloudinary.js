@@ -1,5 +1,4 @@
 import {v2 as cloudinary} from "cloudinary"
-import { log } from "console"
 import fs from "fs"
 
 
@@ -16,12 +15,15 @@ const uploadOnCloudinary= async (localFilePath)=>{
             resource_type:"auto"
         })
         console.log("File uploaded Successfully", response.url);
-        return response
+        fs.unlinkSync(localFilePath)
+        return response;
+        
+        
         
     } catch (error) {
-        fs.unlink(localFilePath)
+        fs.unlinkSync(localFilePath)
         return null;
     }
 }
 
-export {}
+export {uploadOnCloudinary}
