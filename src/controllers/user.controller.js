@@ -98,7 +98,7 @@ const loginUser= asyncHandler( async (req, res)=>{
 
     const isPassValid= await user.isPasswordCorrect(password)
     if(!isPassValid){
-        throw new ApiError(40, "password is incorrect/ Invalid credentials ");
+        throw new ApiError(401, "password is incorrect/ Invalid credentials ");
         
     }
 
@@ -111,13 +111,11 @@ const loginUser= asyncHandler( async (req, res)=>{
         secure:true
     }
 
-    return res.status(200).cookie("accessToken ", accessToken, options).cookie("refreshToken", refreshToken, options).json(
+    return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json(
         new ApiResponse(200, {
             user:logedInUser, accessToken, refreshToken
-        },
-        "User LoggedIn scuuessFully"
-    )
-    )
+        },"User LoggedIn scuuessFully"
+    ));
 
 })
 
