@@ -290,4 +290,4 @@ const updateCoverImage= asyncHandler( async(req,res)=>{
     .json(200, user, "Cover Image updated successfully" )
 })
 
-export {registerUser, loginUser, logOutUser, refreshAccessToken,changeCurrentPassword, getCurrentUser, updateAccountDetails }
+export {registerUser, loginUser, logOutUser, refreshAccessToken,changeCurrentPassword, getCurrentUser, updateAccountDetails, updateUserAvatar, updateCoverImage }
