@@ -26,6 +26,10 @@ router.route("/register").post(
         {
             name:"coverImage",
             maxCount:1
+        },
+        {
+            name:"video",
+            maxCount:1
         }
     ]),
     registerUser
@@ -45,8 +49,6 @@ route.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), update
 
 router.route("/c/:username").get(verifyJWT, getUserChannelProfile)
 router.route("/history").get(verifyJWT, getWatchHistory)
-
-
 
 
 export default router;
