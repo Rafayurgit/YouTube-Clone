@@ -24,6 +24,23 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
 const addComment = asyncHandler(async (req, res) => {
     // TODO: add a comment to a video
+    const {videoId}= req.params;
+    const {content}= req.body;
+    const userId=req.user._id;
+
+    if(!mongoose.Types.isValid(videoId)){
+        throw new ApiError(400,"Invalid video Id");
+    }
+
+    const comment= await Comment.create({
+        video:videoId,
+        content:content,
+        owner:userId,
+    })
+
+    return res.status(201)
+    .json(new ApiResponse(201, comment, "Added comment successfully "))
+
 })
 
 const updateComment = asyncHandler(async (req, res) => {
