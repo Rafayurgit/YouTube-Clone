@@ -88,6 +88,26 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
 const getLikedVideos = asyncHandler(async (req, res) => {
     //TODO: get all liked videos
+
+    
+    const userId= req.user._id;
+
+    if(!isValidObjectId(videoId)){
+        throw new ApiError(400,"Invalid video Id");
+        
+    }
+
+    const likedVideos= await Like.find({
+        likedBy:userId,
+        video: {$exist:true}
+    }).populate("video")
+
+    if(likedVideos.length===0){
+        return res.status(404).json(new ApiError(404, [], "No liked videos found"))
+    }
+    
+    return res.status(200).json(new ApiResponse(200, likedVideos, "Liked videos fetch successfully"))
+    
 })
 
 
