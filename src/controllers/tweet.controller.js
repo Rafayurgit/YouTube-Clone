@@ -21,7 +21,7 @@ const createTweet = asyncHandler(async (req, res) => {
 
     return res.
     status(201)
-    .json(new ApiResponse(200, null, "Tweet created successfully"))
+    .json(new ApiResponse(201, newTweet, "Tweet created successfully"))
 
 
 })
@@ -59,7 +59,7 @@ const updateTweet = asyncHandler(async (req, res) => {
         throw new ApiError(400,"Tweet contnet can't be empty");
     }
 
-    const tweet= await Tweet.findById(userId);
+    const tweet= await Tweet.findById(tweetId);
     if(!tweet){
         throw new ApiError(404,"Tweet not found"); 
     }
