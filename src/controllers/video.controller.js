@@ -5,6 +5,7 @@ import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import { Tweet } from "../models/tweet.model.js"
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
@@ -61,13 +62,40 @@ const getVideoById = asyncHandler(async (req, res) => {
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
-    const { videoId } = req.params
+    const { videoId } = req.params;
+    const userId= req.user._id;
+    const {title, description, thumbnail}= req.body;
+
     //TODO: update video details like title, description, thumbnail
+    //validate videoID
     if(!isValidObjectId(videoId)){
         throw new ApiError(400,"Invalid video Id");
     }
-
+    //validate content
+    if(!title && !description && !thumbnail){
+        throw new ApiError(400,"No valid fileds to update")
+    }
+    //validate video
+    const video = await Video.findById(videoId);
+    if(!video){
+        throw new ApiError(404,"Video not found");
+    }
+    //validate ownership
+    if(String(video.owner) !== String(userId)){
+        throw new ApiError(403,"Not authorized to update video");
+    }
     
+    //update the video
+    if(title) video.title=title;
+    if(description) video.description=description;
+    if(thumbnail) video.thumbnail=thumbnail;
+
+    await video.save();
+    
+    // const updateVideo = await Video.findByIdAndUpdate(videoId, content, {new:true, runValidators:true})
+
+    return res.status(200).json(new ApiResponse(200, video, "Video updated Successfully"))
+
 
 })
 
