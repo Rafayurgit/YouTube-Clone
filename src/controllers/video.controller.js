@@ -101,12 +101,31 @@ const updateVideo = asyncHandler(async (req, res) => {
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
+    const userId= req.user._id;
+
+
     //TODO: delete video
+    if(!isValidObjectId(videoId)){
+        throw new ApiError(400,"Invalid Video id");
+    }
+
+    const video= await Video.findById(videoId)
+    if(!video){
+        throw new ApiError(404,"Video not found");
+    }
+
+    if(String(video.owner)!== String(userId)){
+        throw new ApiError(403,"Not authentic user to delete the video");
+    }
+
+    await video.deleteOne();
+
+    return res.status(200).json(new ApiResponse(200, null, "Successfully deleted the video"))
+
+
 })
 
-const togglePublishStatus = asyncHandler(async (req, res) => {
-    const { videoId } = req.params
-})
+
 
 export {
     getAllVideos,
