@@ -12,6 +12,8 @@ const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
     //TODO: get all videos based on query, sort, pagination
 
+    
+
 
 })
 
@@ -125,7 +127,36 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
 })
 
+const togglePublishStatus = asyncHandler(async (req, res) => {
+    const { videoId } = req.params
+    const userId = req.user._id;
 
+    if(!isValidObjectId(videoId)){
+        throw new ApiError(400,"Invalid video Id");
+    }
+
+    const video = await Video.findById(videoId);
+    if(!video){
+        throw new ApiError(403,"Video not found");
+    }
+
+    if(String(video.owner)!== String(userId)){
+        throw new ApiError(403,"Not authorized to toggle status");
+    }
+
+
+    video.isPublished = !video.isPublished
+                
+    // if(video.isPublished===true){
+    //     video.isPublished=false;
+    // }else{
+    //     video.isPublished=true;
+    // }
+
+    await video.save();
+
+    return res.status(200).json(new ApiResponse(200, toggleStatus, "Status changes successfully"))
+})
 
 export {
     getAllVideos,
