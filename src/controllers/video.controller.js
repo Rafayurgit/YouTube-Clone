@@ -12,7 +12,46 @@ const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
     //TODO: get all videos based on query, sort, pagination
 
+    const pageNumber = parseInt(page, 10);
+    const pageSize= parseInt(limit, 10);
+
+    if(NaN(pageNumber) || NaN(pageSize) || pageNumber < 1 || pageSize <1 ){
+        throw new ApiError(400, "Invalid pagination parameters")
+    }
+
+    const filter={};
+    if(query){
+        filter.$or=[
+            {title: {$regex: query, $options: 'i'}},
+            {description:{$regex:query, $options: 'i'}}
+        ];
+    }
+
+    if(userId){
+        filter.owner=userId;
+    }
+
+    const sortOrder= sortType==="asc" ? 1 : -1;
+    const sort={[sortBy]: sortOrder};
+
+    const videos = await Video.find(filter).sort(sort).skip((pageNumber -1)*pageSize).limit(pageSize);
+
+    const totalVideo= await Video.countDocuments(filter);
+
+    return res.status(200)
+    .json(new ApiResponse(200,{
+        videos,
+        pagination:{
+            total:totalVideo,
+            page:pageNumber,
+            limit:pageSize,
+            totalPages:Math.ceil(totalVideo/ pageSize)
+        }
+    } 
+    , "Feteched all videos successfully"))
     
+    
+
 
 
 })
