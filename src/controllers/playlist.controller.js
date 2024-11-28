@@ -37,6 +37,28 @@ const getPlaylistById = asyncHandler(async (req, res) => {
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
     const {playlistId, videoId} = req.params
+
+    if(!isValidObjectId(playlistId) || !isValidObjectId(videoId)){
+        throw new ApiError(400,"Invalid PlayList Id or Video Id");
+    }
+
+    const playList= await Playlist.findById(playlistId);
+    if(!playList){
+        throw new ApiError(404,"PlayList not found");   
+    }
+
+    if(playList.video.includes(videoId)){
+        throw new ApiError(400,"Video Alredy exist in playList");
+    }
+
+    playList.video.push(videoId);
+    await playList.save()
+
+    return res.status(200).json(200, playList, "Successfully added video to playList")
+
+
+
+
 })
 
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
