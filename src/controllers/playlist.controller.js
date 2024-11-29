@@ -9,6 +9,19 @@ const createPlaylist = asyncHandler(async (req, res) => {
     const {name, description} = req.body
     //TODO: create playlist
 
+    const ownerId= req.user?._id || null;
+
+
+    if(!name && !description){
+        throw new ApiError(400,"Data required to update");
+    }
+
+    const playList= await Playlist.create({name:name, description:description, owner:ownerId})
+    if(!playList){
+        throw new ApiError(404,"PlayList not found");
+    }
+
+    return res.status(200).json(new ApiResponse(200, playList, "Created playList successfully"))
 
 })
 
